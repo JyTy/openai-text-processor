@@ -14,6 +14,8 @@ async function transcribeAudio(filePath) {
       path.dirname(filePath),
       path.basename(filePath, path.extname(filePath)) + ".txt"
     );
+
+    // Whisper command and args
     const command = "whisper";
     const args = [
       filePath,
@@ -24,6 +26,14 @@ async function transcribeAudio(filePath) {
       "--model_dir",
       whisperConfig.modelDir,
     ];
+
+    if (fs.existsSync(outputFilePath)) {
+      console.log(
+        `File already exists. Skipping transcription: ${outputFilePath}`
+      );
+      resolve(outputFilePath);
+      return;
+    }
 
     console.log("Starting transcription process...");
 
