@@ -32,6 +32,7 @@ const audioFilePath = process.argv[2];
 
 transcribeAudio(audioFilePath)
   .then(async (outputFilePath) => {
+    console.log(`Transcript saved at: ${outputFilePath}`);
     const transcription = fs.readFileSync(outputFilePath, "utf-8");
     console.log("Generating summary...");
     const summary = await generateSummary(transcription);

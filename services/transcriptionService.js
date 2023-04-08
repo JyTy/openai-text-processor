@@ -5,6 +5,8 @@ const { whisperConfig } = require("../config");
 
 async function transcribeAudio(filePath) {
   return new Promise(async (resolve, reject) => {
+    // resolve("audio/20230407-1307-bof-tech-vision.txt");
+
     const tempOutputFilePath = path.join(
       path.basename(filePath, path.extname(filePath)) + ".txt"
     );
