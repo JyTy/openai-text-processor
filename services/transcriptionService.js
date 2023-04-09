@@ -5,8 +5,6 @@ const fs = require("fs-extra");
 
 async function transcribeAudio(filePath, langModel) {
   return new Promise(async (resolve, reject) => {
-    // resolve("audio/20230407-1307-bof-tech-vision.txt");
-
     const tempOutputFilePath = path.join(
       path.basename(filePath, path.extname(filePath)) + ".txt"
     );
