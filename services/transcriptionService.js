@@ -1,9 +1,9 @@
 const { spawn } = require("child_process");
 const path = require("path");
 const fs = require("fs-extra");
-const { whisperConfig } = require("../config");
+// const { whisperConfig } = require("../config");
 
-async function transcribeAudio(filePath) {
+async function transcribeAudio(filePath, langModel) {
   return new Promise(async (resolve, reject) => {
     // resolve("audio/20230407-1307-bof-tech-vision.txt");
 
@@ -22,9 +22,9 @@ async function transcribeAudio(filePath) {
       "--output_format",
       "txt",
       "--model",
-      whisperConfig.model,
+      langModel,
       "--model_dir",
-      whisperConfig.modelDir,
+      process.env.WHISPER_MODEL_PATH,
     ];
 
     if (fs.existsSync(outputFilePath)) {

@@ -1,16 +1,13 @@
 const { Configuration, OpenAIApi } = require("openai");
-const dotenv = require("dotenv");
 const { splitTextIntoChunks } = require("../utils/textUtils");
-const { openAIConfig } = require("../config");
-
-dotenv.config();
 
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
 });
 const openai = new OpenAIApi(configuration);
 
-async function generateSummary(inputText) {
+async function generateSummary(inputText, proc) {
+  let summary = "";
   const maxLength = 12000; // experimental apparently this needs to be counted by tiktoken... pyton scrypt ready and utill added but not implemented
 
   const initConversation = [
@@ -21,7 +18,9 @@ async function generateSummary(inputText) {
     },
     {
       role: "user",
-      content: openAIConfig.appendInitPrompt,
+      content: `
+      Summarise this text. To be used as a meeting report, so do not skip any important details.
+      Do skip any non relevant pleasentries! Text to summarise: `,
     },
   ];
 
@@ -29,7 +28,12 @@ async function generateSummary(inputText) {
   const conversation = [
     {
       role: "user",
-      content: openAIConfig.appendPrompt,
+      content: `
+      Summarise this text. To be used as a meeting report, so do not skip any important details.
+      Do skip any non relevant pleasentries! This is a continuation of a summary,
+      so no intro needed just keep on writing as you would be continuing from a prevous prompt.
+      Meaning you do not use During the meeting or In this meeting report or something simmilar to begin
+      the response with. Text to summarise: `,
     },
   ];
 
@@ -40,8 +44,6 @@ async function generateSummary(inputText) {
 
   const textChunks = splitTextIntoChunks(inputText, maxLength - contentLengt);
   console.log("textChunks: ", textChunks.length);
-
-  let summary = "";
 
   let assistantResponse;
 
