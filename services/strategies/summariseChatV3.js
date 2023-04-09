@@ -22,25 +22,7 @@ async function chatSummarizev3(inputText) {
     },
   ];
 
-  // by removin gthe system role the system obeys the prompt more and the response really feels like the continuation of the summary.
-  const conversation = [
-    {
-      role: "user",
-      content: `
-        Summarise this text. To be used as a meeting report, so do not skip any important details.
-        Do skip any non relevant pleasentries! This is a continuation of a summary,
-        so no intro needed just keep on writing as you would be continuing from a prevous prompt.
-        Meaning you do not use During the meeting or In this meeting report or something simmilar to begin
-        the response with. Text to summarise: `,
-    },
-  ];
-
-  const contentLengt = conversation.reduce(
-    (accumulator, content) => accumulator + content.content.length,
-    0
-  );
-
-  const textChunks = splitTextIntoChunks(inputText, maxLength - contentLengt);
+  const textChunks = splitTextIntoChunks(inputText, maxLength);
   console.log("textChunks: ", textChunks.length);
 
   let assistantResponse;
