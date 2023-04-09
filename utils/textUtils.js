@@ -1,6 +1,3 @@
-const { spawn } = require("child_process");
-const fs = require("fs");
-
 function splitTextIntoChunks(text, maxLength) {
   const words = text.split(" ");
   const chunks = [];

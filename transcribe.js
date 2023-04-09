@@ -14,10 +14,10 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 
-async function saveSummary(filePath, summary) {
+async function saveSummary(filePath, summary, proc) {
   const summaryFilePath = path.join(
     path.dirname(filePath),
-    path.basename(filePath, path.extname(filePath)) + "-summary.txt"
+    path.basename(filePath, path.extname(filePath)) + "-" + proc + ".txt"
   );
   fs.writeFileSync(summaryFilePath, summary);
   console.log(`Summary saved at: ${summaryFilePath}`);
@@ -53,7 +53,7 @@ transcribeAudio(audioFilePath, langModel)
     console.log("Generating summary...");
     const summary = await generateSummary(transcription, proc);
     if (summary) {
-      await saveSummary(outputFilePath, summary);
+      await saveSummary(outputFilePath, summary, proc);
     }
   })
   .catch((code) => {

@@ -1,11 +1,12 @@
 const { splitTextIntoChunks } = require("../../utils/textUtils");
+const { calculateCost } = require("../../utils/costUtils");
 const { Configuration, OpenAIApi } = require("openai");
 const openai = require("../openaiClient");
 
 async function chatSummarizev3(inputText) {
-  console.log(process.env.OPENAI_API_KEY);
-
   let summary = "";
+  const model = "gpt-3.5-turbo";
+  let tokensUsed = 0;
   const maxLength = 12000; // experimental apparently this needs to be counted by tiktoken... pyton scrypt ready and utill added but not implemented
 
   const initConversation = [
@@ -79,7 +80,7 @@ async function chatSummarizev3(inputText) {
 
     try {
       const response = await openai.createChatCompletion({
-        model: "gpt-3.5-turbo",
+        model: model,
         messages: messages,
       });
 
@@ -92,19 +93,22 @@ async function chatSummarizev3(inputText) {
       //     "\n\n";
 
       assistantResponse = response.data.choices[0].message.content;
-
       //   console.log("response: ", assistantResponse);
+      // console.log("response: ", response.data);
 
       if (i > 0) {
         summary += "\n\n";
       }
 
       summary += assistantResponse;
+      tokensUsed += response.data.usage.total_tokens;
     } catch (error) {
       console.error("Error generating summary:", error);
       return null;
     }
   }
+
+  calculateCost(tokensUsed, model);
 
   return summary;
 }
