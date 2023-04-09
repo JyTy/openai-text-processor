@@ -1,12 +1,10 @@
+const { splitTextIntoChunks } = require("../../utils/textUtils");
 const { Configuration, OpenAIApi } = require("openai");
-const { splitTextIntoChunks } = require("../utils/textUtils");
+const openai = require("../openaiClient");
 
-const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-const openai = new OpenAIApi(configuration);
+async function chatSummarizev3(inputText) {
+  console.log(process.env.OPENAI_API_KEY);
 
-async function generateSummary(inputText, proc) {
   let summary = "";
   const maxLength = 12000; // experimental apparently this needs to be counted by tiktoken... pyton scrypt ready and utill added but not implemented
 
@@ -19,8 +17,8 @@ async function generateSummary(inputText, proc) {
     {
       role: "user",
       content: `
-      Summarise this text. To be used as a meeting report, so do not skip any important details.
-      Do skip any non relevant pleasentries! Text to summarise: `,
+        Summarise this text. To be used as a meeting report, so do not skip any important details.
+        Do skip any non relevant pleasentries! Text to summarise: `,
     },
   ];
 
@@ -29,11 +27,11 @@ async function generateSummary(inputText, proc) {
     {
       role: "user",
       content: `
-      Summarise this text. To be used as a meeting report, so do not skip any important details.
-      Do skip any non relevant pleasentries! This is a continuation of a summary,
-      so no intro needed just keep on writing as you would be continuing from a prevous prompt.
-      Meaning you do not use During the meeting or In this meeting report or something simmilar to begin
-      the response with. Text to summarise: `,
+        Summarise this text. To be used as a meeting report, so do not skip any important details.
+        Do skip any non relevant pleasentries! This is a continuation of a summary,
+        so no intro needed just keep on writing as you would be continuing from a prevous prompt.
+        Meaning you do not use During the meeting or In this meeting report or something simmilar to begin
+        the response with. Text to summarise: `,
     },
   ];
 
@@ -55,29 +53,29 @@ async function generateSummary(inputText, proc) {
       messages.push({ role: "user", content: textChunks[i] });
     } else {
       let referenceSummary = `
-        This is a continuation of a summary that I need to do in text chunks because of the max_token
-        api limit. This is the summary of the previous chunk of text:
-        `;
+          This is a continuation of a summary that I need to do in text chunks because of the max_token
+          api limit. This is the summary of the previous chunk of text:
+          `;
       referenceSummary += "\n\n" + assistantResponse;
       referenceSummary +=
         "\n\n" +
         `
-        --- Summary ends here. Do not do anything with this block of text, do not include it in the summary.
-        This is here just for your refference so you can continue in a meaningfull way with the new block.
-        I will add next text I need you to summarise in the next message!
-        `;
+          --- Summary ends here. Do not do anything with this block of text, do not include it in the summary.
+          This is here just for your refference so you can continue in a meaningfull way with the new block.
+          I will add next text I need you to summarise in the next message!
+          `;
 
       let summary = `
-      This is a continuation of a summary, start with a new sentence but then just keep on writing as you would be continuing from
-      a prevous summary that you can reference in the previous message. Meaning you do not use During the meeting or In this meeting report or something simmilar
-      to begin the response with. Summarise the text below (but reference the summary in previous text to continue in a meaningful way).
-      To be used as a meeting report, so do not skip any important details. Do skip any non relevant pleasentries!
-      Text to summarise: `;
+        This is a continuation of a summary, start with a new sentence but then just keep on writing as you would be continuing from
+        a prevous summary that you can reference in the previous message. Meaning you do not use During the meeting or In this meeting report or something simmilar
+        to begin the response with. Summarise the text below (but reference the summary in previous text to continue in a meaningful way).
+        To be used as a meeting report, so do not skip any important details. Do skip any non relevant pleasentries!
+        Text to summarise: `;
       summary += "\n\n" + textChunks[i];
       summary +=
         "\n\n" +
         `If any action were agreed that will need to be taken after the meeting add them as a list at the end of this
-        summary. Otherwise skip this step and do not add anything.`;
+          summary. Otherwise skip this step and do not add anything.`;
 
       messages = [
         {
@@ -130,5 +128,5 @@ async function generateSummary(inputText, proc) {
 }
 
 module.exports = {
-  generateSummary,
+  chatSummarizev3,
 };
