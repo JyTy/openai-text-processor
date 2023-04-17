@@ -169,10 +169,13 @@ async function chatSummarizev3(inputText) {
     //     "Not enough tokens to do final pass, returning unpolished summary"
     //   );
     // }
+  } else {
+    finalSummary = summary;
   }
 
   calculateCost(tokensUsed, model);
 
+  // console.log("finalSummary: ", finalSummary);
   return finalSummary;
 }
 
